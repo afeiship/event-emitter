@@ -1,9 +1,7 @@
-import Es6Emitter from '../src';
-
-class EventBus extends Es6Emitter {}
+var EventEmitter = require('../index');
 
 test('Event bus on/emit event', () => {
-  const event = new EventBus();
+  const event = EventEmitter;
   let result = 0;
   event.on('event1', () => {
     result++;
@@ -18,7 +16,7 @@ test('Event bus on/emit event', () => {
 });
 
 test('Event emit with args', () => {
-  const event = new EventBus();
+  const event = EventEmitter;
   let result = null;
   event.on('event1', (inSender, inData) => {
     result = inData.name;

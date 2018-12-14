@@ -10,6 +10,7 @@ var EventEmitter = {
         inTarget[item] = EventEmitter[item];
       }
     }
+    return inTarget;
   },
   on: function(inName, inHandler, inContext) {
     var self = this;
@@ -83,6 +84,6 @@ if (typeof module !== 'undefined' && module.exports) {
       return EventEmitter;
     });
   } else {
-    this.EventEmitter = EventEmitter;
+    global.EventEmitter = EventEmitter;
   }
 }
