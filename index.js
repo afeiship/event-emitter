@@ -51,15 +51,15 @@ var EventEmitter = {
     if (listeners && listeners.length > 0) {
       for (var i = 0; i < listeners.length; i++) {
         var listener = listeners[i];
-        var result = listener.handler.call(
-          listener.context || listener.sender,
-          listener.sender,
-          inData
-        );
-        if (result === false) {
+        var context = listener.context;
+        var sender = listener.sender;
+        var handler = listener.handler;
+        if (handler.call(context || sender, sender, inData) === false) {
           break;
         }
-        listener.handler.__once__ && this.off(inName, listener.handler, listener.context);
+        if (handler.__once__) {
+          this.off(inName, handler, context);
+        }
       }
     }
   },
