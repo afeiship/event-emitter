@@ -1,0 +1,12 @@
+{
+  "name": "event-emitter",
+  "version": "0.0.1",
+  "description": "A simple event emitter",
+  "homepage": "https://github.com/afeiship/event-emitter",
+  "author": {
+    "name": "afei",
+    "email": "1290657123@qq.com"
+  },
+  "main": "index.js",
+  "license": "MIT"
+}

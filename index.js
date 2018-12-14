@@ -1,0 +1,88 @@
+var global = global || this || window || Function('return this')();
+var EVENT_PROPS = ['on', 'off', 'emit', 'one', 'once'];
+var EventEmitter = {
+  mixin: function(inTarget) {
+    for (var i = 0; i < EVENT_PROPS.length; i++) {
+      var item = EVENT_PROPS[i];
+      if (typeof inTarget === 'function') {
+        inTarget.prototype[item] = EventEmitter[item];
+      } else {
+        inTarget[item] = EventEmitter[item];
+      }
+    }
+  },
+  on: function(inName, inHandler, inContext) {
+    var self = this;
+    var map = (this.__listeners__ = this.__listeners__ || {});
+    var listeners = (map[inName] = map[inName] || []);
+    listeners.push({
+      sender: this,
+      handler: inHandler,
+      context: inContext
+    });
+    return {
+      destroy: function() {
+        self.off(inName, inHandler, inContext);
+      }
+    };
+  },
+  off: function(inName, inHandler, inContext) {
+    var map = (this.__listeners__ = this.__listeners__ || {});
+    if (inName in map === false) return;
+
+    var listeners = map[inName];
+    var _listeners = listeners.slice(0);
+    if (inHandler) {
+      for (var i = 0; i < _listeners.length; i++) {
+        var listener = _listeners[i];
+        if (listener.handler === inHandler && (!inContext || listener.context === inContext)) {
+          listeners.splice(i, 1);
+        }
+      }
+    } else {
+      listeners.length = 0;
+    }
+  },
+  emit: function(inName, inData) {
+    var map = (this.__listeners__ = this.__listeners__ || {});
+    if (inName in map === false) return;
+
+    var listeners = map[inName];
+    if (listeners && listeners.length > 0) {
+      for (var i = 0; i < listeners.length; i++) {
+        var listener = listeners[i];
+        var result = listener.handler.call(
+          listener.context || listener.sender,
+          listener.sender,
+          inData
+        );
+        if (result === false) {
+          break;
+        }
+        listener.handler.__once__ && this.off(inName, listener.handler, listener.context);
+      }
+    }
+  },
+  one: function(inName, inHandler, inContext) {
+    var map = (this.__listeners__ = this.__listeners__ || {});
+    if (!map[inName]) {
+      return this.on(inName, inHandler, inContext);
+    }
+  },
+  once: function(inName, inHandler, inContext) {
+    inHandler.__once__ = true;
+    return this.on(inName, inHandler, inContext);
+  }
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = EventEmitter;
+} else {
+  if (typeof define === 'function' && define.amd) {
+    define([], function() {
+      return EventEmitter;
+    });
+  } else {
+    this.EventEmitter = EventEmitter;
+  }
+}
