@@ -1,10 +1,11 @@
 var global = global || this || window || Function('return this')();
 var EVENT_PROPS = ['on', 'off', 'emit', 'one', 'once'];
+var FUNC = 'function';
 var EventEmitter = {
   mixin: function(inTarget) {
     for (var i = 0; i < EVENT_PROPS.length; i++) {
       var item = EVENT_PROPS[i];
-      if (typeof inTarget === 'function') {
+      if (typeof inTarget === FUNC) {
         inTarget.prototype[item] = EventEmitter[item];
       } else {
         inTarget[item] = EventEmitter[item];

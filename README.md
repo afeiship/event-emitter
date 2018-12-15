@@ -14,3 +14,10 @@ npm install -S afeiship/event-emitter --registry=https://registry.npm.taobao.org
 | emit | name,data             | fire an event       |
 | one  | name, handler,context | register only once  |
 | once | name, handler,context | excute only once    |
+
+## compatibility
+- [x] browser (es5)
+- [x] nodejs
+- [x] wexin app
+- [x] weixin h5
+- [x] other
