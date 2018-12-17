@@ -67,8 +67,8 @@ var EventEmitter = {
       }
     };
 
-    inName !== STAR && dispatch(inName, map[inName]);
-    dispatch(STAR, map[STAR]);
+    inName !== STAR && dispatch(inName);
+    dispatch(STAR);
   },
   one: function(inName, inHandler, inContext) {
     var map = (this.__listeners__ = this.__listeners__ || {});
