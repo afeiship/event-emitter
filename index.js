@@ -49,19 +49,26 @@ var EventEmitter = {
     var map = (this.__listeners__ = this.__listeners__ || {});
     if (inName in map === false) return;
 
-    var listeners = (map[inName] || []).slice();
-    for (var i = 0; i < listeners.length; i++) {
-      var listener = listeners[i];
-      var context = listener.context;
-      var sender = listener.sender;
-      var handler = listener.handler;
-      if (handler.call(context || sender, sender, inData) === false) {
-        break;
+    var dispatch = function(inType, inListeners) {
+      var listeners = (inListeners || []).slice();
+      for (var i = 0; i < listeners.length; i++) {
+        var listener = listeners[i];
+        var context = listener.context;
+        var sender = listener.sender;
+        var handler = listener.handler;
+        if (handler.call(context || sender, sender, inData) === false) {
+          break;
+        }
+        if (handler.__once__) {
+          this.off(inType, handler, context);
+        }
       }
-      if (handler.__once__) {
-        this.off(inName, handler, context);
-      }
+    };
+
+    if (inName !== '*') {
+      dispatch(inName, map[inName]);
     }
+    dispatch(inName, map['*']);
   },
   one: function(inName, inHandler, inContext) {
     var map = (this.__listeners__ = this.__listeners__ || {});
