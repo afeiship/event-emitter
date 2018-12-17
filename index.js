@@ -49,19 +49,17 @@ var EventEmitter = {
     var map = (this.__listeners__ = this.__listeners__ || {});
     if (inName in map === false) return;
 
-    var listeners = map[inName];
-    if (listeners && listeners.length > 0) {
-      for (var i = 0; i < listeners.length; i++) {
-        var listener = listeners[i];
-        var context = listener.context;
-        var sender = listener.sender;
-        var handler = listener.handler;
-        if (handler.call(context || sender, sender, inData) === false) {
-          break;
-        }
-        if (handler.__once__) {
-          this.off(inName, handler, context);
-        }
+    var listeners = (map[inName] || []).slice();
+    for (var i = 0; i < listeners.length; i++) {
+      var listener = listeners[i];
+      var context = listener.context;
+      var sender = listener.sender;
+      var handler = listener.handler;
+      if (handler.call(context || sender, sender, inData) === false) {
+        break;
+      }
+      if (handler.__once__) {
+        this.off(inName, handler, context);
       }
     }
   },
