@@ -50,8 +50,8 @@ var EventEmitter = {
     var map = (this.__listeners__ = this.__listeners__ || {});
     if (inName in map === false) return;
 
-    var dispatch = function(inType, inListeners) {
-      var listeners = (inListeners || []).slice();
+    var dispatch = function(inType) {
+      var listeners = (map[inType] || []).slice();
       var data = inType === STAR ? Object.assign({ type: inName }, inData) : inData;
       for (var i = 0; i < listeners.length; i++) {
         var listener = listeners[i];
