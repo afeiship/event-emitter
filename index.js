@@ -1,6 +1,7 @@
 var global = global || this || window || Function('return this')();
 var EVENT_PROPS = ['on', 'off', 'emit', 'one', 'once'];
 var FUNC = 'function';
+var STAR = '*';
 var EventEmitter = {
   mixin: function(inTarget) {
     for (var i = 0; i < EVENT_PROPS.length; i++) {
@@ -49,19 +50,25 @@ var EventEmitter = {
     var map = (this.__listeners__ = this.__listeners__ || {});
     if (inName in map === false) return;
 
-    var listeners = (map[inName] || []).slice();
-    for (var i = 0; i < listeners.length; i++) {
-      var listener = listeners[i];
-      var context = listener.context;
-      var sender = listener.sender;
-      var handler = listener.handler;
-      if (handler.call(context || sender, sender, inData) === false) {
-        break;
+    var dispatch = function(inType, inListeners) {
+      var listeners = (inListeners || []).slice();
+      var data = inType === STAR ? Object.assign({ type: inName }, inData) : inData;
+      for (var i = 0; i < listeners.length; i++) {
+        var listener = listeners[i];
+        var context = listener.context;
+        var sender = listener.sender;
+        var handler = listener.handler;
+        if (handler.call(context || sender, sender, data) === false) {
+          break;
+        }
+        if (handler.__once__) {
+          this.off(inName, handler, context);
+        }
       }
-      if (handler.__once__) {
-        this.off(inName, handler, context);
-      }
-    }
+    };
+
+    inName !== STAR && dispatch(inName, map[inName]);
+    dispatch(STAR, map[STAR]);
   },
   one: function(inName, inHandler, inContext) {
     var map = (this.__listeners__ = this.__listeners__ || {});
