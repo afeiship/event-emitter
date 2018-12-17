@@ -49,7 +49,7 @@ var EventEmitter = {
     var map = (this.__listeners__ = this.__listeners__ || {});
     if (inName in map === false) return;
 
-    var dispatch = function(inType, inListeners) {
+    var dispatch = function(inListeners) {
       var listeners = (inListeners || []).slice();
       for (var i = 0; i < listeners.length; i++) {
         var listener = listeners[i];
@@ -60,15 +60,13 @@ var EventEmitter = {
           break;
         }
         if (handler.__once__) {
-          this.off(inType, handler, context);
+          this.off(inName, handler, context);
         }
       }
     };
 
-    if (inName !== '*') {
-      dispatch(inName, map[inName]);
-    }
-    dispatch(inName, map['*']);
+    inName !== '*' && dispatch(map[inName]);
+    dispatch(map['*']);
   },
   one: function(inName, inHandler, inContext) {
     var map = (this.__listeners__ = this.__listeners__ || {});
